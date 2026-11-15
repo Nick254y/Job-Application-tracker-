@@ -32,8 +32,7 @@ app.add_middleware(
 app.include_router(api_router, prefix="/api")
 app.include_router(auth_router, prefix="/api")
 
-app.mount("/static", StaticFiles(directory="templates"), name="static")
-
+app.mount("/static", StaticFiles(directory=BASE_DIR / "templates"), name="static")
 
 @app.get("/")
 def root():
