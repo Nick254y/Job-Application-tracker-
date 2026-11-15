@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DocFlow - Payment Management</title>
+<style>
+:root{
+  --bg:#f6f7f9;
+  --card:#fff;
+  --text:#1b1f24;
+  --muted:#656d76;
+  --line:#e1e4e8;
+  --accent:#2f6fed;
+  --good:#1a7f37;
+  --warn:#9a6700;
+  --bad:#cf222e;
+  --primary:#0b6bcb;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --bg:#0f1216;
+    --card:#171b21;
+    --text:#e6e9ee;
+    --muted:#9099a5;
+    --line:#2a313a;
+    --accent:#6b9bff;
+    --good:#3fb950;
+    --warn:#d29922;
+    --bad:#f85149;
+    --primary:#6b9bff;
+  }
+}
+*{box-sizing:border-box}
+body{margin:0;font:15px/1.45 system-ui,sans-serif;background:var(--bg);color:var(--text)}
+header{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;padding:14px 16px;background:var(--card);border-bottom:1px solid var(--line)}
+h1{font-size:18px;margin:0}
+main{max-width:900px;margin:0 auto;padding:16px}
+nav{display:flex;gap:6px;margin-bottom:14px}
+button,select,input{font:inherit;color:var(--text);background:var(--card);border:1px solid var(--line);border-radius:8px;padding:8px 12px}
+button{cursor:pointer}
+button.primary,nav button.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.row input{flex:1;min-width:140px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin-bottom:10px}
+.card h3{margin:0 0 2px;font-size:16px}
+.muted{color:var(--muted);font-size:13px}
+.top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.score{font-weight:700;white-space:nowrap}
+.tags{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}
+.tag{font-size:12px;padding:2px 8px;border-radius:99px;border:1px solid var(--line);color:var(--muted)}
+.actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px;margin-bottom:14px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.stat b{display:block;font-size:22px}
+a{color:var(--accent)}
+.hidden{display:none}
+footer{text-align:center;padding:16px;color:var(--muted);font-size:13px}
+
+/* Login/Signup specific */
+.auth-page h1{color:var(--accent);margin-top:0}
+.auth-form .form-group{margin-bottom:12px}
+.auth-form label{display:block;margin-bottom:4px;font-size:14px;color:var(--text)}
+.auth-form input, .auth-form select{font-size:15px;padding:10px;border:1px solid var(--line);border-radius:8px;width:100%}
+.auth-form .btn-primary{background:var(--accent);color:#fff;border:none;padding:12px 20px;border-radius:8px;font-size:16px;cursor:pointer}
+.auth-form .btn-primary:hover{background:var(--accent);opacity:0.9}
+.auth-form .error-message{color:var(--bad);font-size:13px;margin-top:8px}
+.auth-form .success-message{color:var(--good);font-size:14px;margin-top:8px}
+.auth-form .form-group.mt{margin-top:14px}
+.auth-form .toggle-link{color:var(--accent);cursor:pointer;font-size:14px;text-decoration:none}
+.auth-form .toggle-link:hover{text-decoration:underline}
+</style>
+</head>
+<body>
+<header>
+  <h1>DocFlow Marketplace</h1>
+  <p class="muted" style="margin:0;font-size:14px;">Property Payment & Tracking</p>
+</header>
+
+<main>
+  <!-- Login Section -->
+  <section id="login-page" class="card">
+    <h2>Sign In</h2>
+    <div class="auth-form">
+      <div class="form-group">
+        <label for="login-username">Username or Email</label>
+        <input type="text" id="login-username" placeholder="Enter your username or email" required>
+      </div>
+      <div class="form-group">
+        <label for="login-password">Password</label>
+        <input type="password" id="login-password" placeholder="Enter your password" required>
+      </div>
+      <button class="btn-primary" onclick="signIn()">Sign In</button>
+      <p class="muted" style="margin-top:8px;text-align:center">
+        Don't have an account? <a href="#" onclick="showSignup(); return false;">Sign Up</a>
+      </p>
+      <div id="login-msg" class="success-message" style="display:none;"></div>
+      <div id="login-error" class="error-message" style="display:none;"></div>
+    </div>
+  </section>
+
+  <!-- Signup Section -->
+  <section id="signup-page" class="card hidden">
+    <h2>Create Account</h2>
+    <div class="auth-form">
+      <div class="form-group">
+        <label for="signup-username">Username</label>
+        <input type="text" id="signup-username" placeholder="Choose a username" required>
+      </div>
+      <div class="form-group">
+        <label for="signup-email">Email</label>
+        <input type="email" id="signup-email" placeholder="your@email.com" required>
+      </div>
+      <div class="form-group">
+        <label for="signup-password">Password</label>
+        <input type="password" id="signup-password" placeholder="Create a password" required minlength="6">
+      </div>
+      <div class="form-group">
+        <label for="signup-confirm">Confirm Password</label>
+        <input type="password" id="signup-confirm" placeholder="Confirm your password" required>
+      </div>
+      <div class="form-group">
+        <label>Role</label>
+        <select id="signup-role">
+          <option value="client">Client / Member</option>
+          <option value="admin">Admin</option>
+        </select>
+      </div>
+      <button class="btn-primary" onclick="signUp()">Create Account</button>
+      <p class="muted" style="margin-top:8px;text-align:center">
+        Already have an account? <a href="#" onclick="showLogin(); return false;">Sign In</a>
+      </p>
+      <div id="signup-msg" class="success-message" style="display:none;"></div>
+      <div id="signup-error" class="error-message" style="display:none;"></div>
+    </div>
+  </section>
+
+  <!-- Dashboard -->
+  <section id="dashboard" class="hidden">
+    <h2>Welcome, <span id="user-name"></span></h2>
+    <div class="stats">
+      <div class="stat"><b id="total-payments">0</b><span class="muted">Total Payments</span></div>
+      <div class="stat"><b id="total-amount">0</b><span class="muted">Total Amount (KES)</span></div>
+    </div>
+    <div class="row" style="margin-top:14px">
+      <button class="primary" onclick="logout()">Log Out</button>
+    </div>
+  </section>
+
+  <div id="dashboard-content" style="display:none">
+    <div class="card">
+      <h3>Your Payments</h3>
+      <div id="payment-list"></div>
+    </div>
+  </div>
+</main>
+
+<footer>DocFlow Marketplace - Payment & Tracking System</footer>
+
+<script>
+const TOKEN_KEY = 'docflow_token';
+let currentUser = null;
+
+function showLogin() {
+  $('#login-page').classList.remove('hidden');
+  $('#signup-page').classList.add('hidden');
+  $('#dashboard').classList.add('hidden');
+  $('#dashboard-content').style.display = 'none';
+  $('#login-username').focus();
+}
+
+function showSignup() {
+  $('#login-page').classList.add('hidden');
+  $('#signup-page').classList.remove('hidden');
+  $('#signup-username').focus();
+}
+
+function showDashboard() {
+  $('#login-page').classList.add('hidden');
+  $('#signup-page').classList.add('hidden');
+  $('#dashboard').classList.remove('hidden');
+  $('#dashboard-content').style.display = 'block';
+}
+
+function saveToken(token, user) {
+  localStorage.setItem('docflow_token', token);
+  localStorage.setItem('docflow_user', JSON.stringify(user));
+  currentUser = user;
+  showDashboard();
+}
+
+function logout() {
+  localStorage.removeItem('docflow_token');
+  localStorage.removeItem('docflow_user');
+  currentUser = null;
+  showLogin();
+  $('#login-username').focus();
+}
+
+function getToken() {
+  return localStorage.getItem('docflow_token');
+}
+
+async function api(path, opts = {}) {
+  const token = getToken();
+  const headers = {
+    'Content-Type': 'application/json',
+    ...opts.headers
+  };
+  if (token) {
+    headers['Authorization'] = 'Bearer ' + token;
+  }
+  const r = await fetch(path, { ...opts, headers });
+  if (r.status === 401) {
+    localStorage.removeItem('docflow_token');
+    localStorage.removeItem('docflow_user');
+    currentUser = null;
+    showLogin();
+    throw new Error('Session expired. Please log in again.');
+  }
+  if (!r.ok) {
+    const err = await r.json().catch(() => ({ detail: r.statusText }));
+    throw new Error(err.detail || r.statusText);
+  }
+  return r.json();
+}
+
+async function signUp() {
+  const username = $('#signup-username').value.trim();
+  const email = $('#signup-email').value.trim();
+  const password = $('#signup-password').value;
+  const confirm = $('#signup-confirm').value;
+  const role = $('#signup-role').value;
+
+  if (password !== confirm) {
+    $('#signup-error').textContent = 'Passwords do not match.';
+    $('#signup-error').style.display = 'block';
+    return;
+  }
+
+  try {
+    const res = await fetch('/api/auth/signup', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, email, password, role })
+    });
+    const data = await res.json();
+    if (res.ok) {
+      $('#signup-msg').textContent = data.message || 'Account created! Please log in.';
+      $('#signup-msg').style.display = 'block';
+      $('#signup-password').value = '';
+      $('#signup-confirm').value = '';
+    } else {
+      $('#signup-error').textContent = data.detail || 'Sign up failed';
+      $('#signup-error').style.display = 'block';
+    }
+  } catch (e) {
+    $('#signup-error').textContent = 'Network error: ' + e.message;
+    $('#signup-error').style.display = 'block';
+  }
+}
+
+async function signIn() {
+  const username = $('#login-username').value.trim();
+  const password = $('#login-password').value;
+
+  if (!username || !password) {
+    $('#login-error').textContent = 'Please enter both username and password.';
+    $('#login-error').style.display = 'block';
+    return;
+  }
+
+  try {
+    const res = await fetch('/api/auth/signin', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, password })
+    });
+    const data = await res.json();
+    if (res.ok) {
+      saveToken(data.access_token, data);
+      $('#login-msg').textContent = data.message || 'Welcome back!';
+      $('#login-msg').style.display = 'block';
+      $('#login-password').value = '';
+      setTimeout(() => {
+        $('#login-msg').style.display = 'none';
+      }, 2000);
+    } else {
+      $('#login-error').textContent = data.detail || 'Invalid credentials';
+      $('#login-error').style.display = 'block';
+    }
+  } catch (e) {
+    $('#login-error').textContent = 'Network error: ' + e.message;
+    $('#login-error').style.display = 'block';
+  }
+}
+
+// Enter key to submit login
+$('#login-password').addEventListener('keydown', e => {
+  if (e.key === 'Enter') signIn();
+});
+$('#signup-password').addEventListener('keydown', e => {
+  if (e.key === 'Enter') signUp();
+});
+$('#signup-confirm').addEventListener('keydown', e => {
+  if (e.key === 'Enter') signUp();
+});
+
+// Check for existing token
+window.addEventListener('DOMContentLoaded', () => {
+  const token = getToken();
+  if (token) {
+    showDashboard();
+  } else {
+    showLogin();
+  }
+});
+</script>
+</body>
+</html>
