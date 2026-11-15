@@ -1,8 +1,11 @@
 # Python
 __pycache__/
 *.py[cod]
+*.pyc
 *$py.class
 *.egg-info/
+*.pyc
+*.pyo
 .venv/
 venv/
 ENV/
@@ -18,6 +21,13 @@ env/
 htmlcov/
 .coverage
 coverage.xml
+.pytest_cache/
+
+# Build
+build/
+dist/
+*.egg-info/
+.eggs/
 
 # Environment
 .env
@@ -40,3 +50,10 @@ render.yaml
 # Test cache
 .cache/
 htmlcov/
+.coverage
+coverage.xml
+
+# Byte-compiled
+__pycache__/
+*.pyc
+*.pyo
