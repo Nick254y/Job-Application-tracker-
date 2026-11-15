@@ -1,0 +1,24 @@
+name: job-tracker
+runtime: python
+python_version: 3.11
+build:
+  command: pip install -r requirements.txt
+start:
+  command: gunicorn app.main:app --bind 0.0.0.0:$PORT --workers 1 --timeout 60
+env:
+  - key: CLAUDE_API_KEY
+    value: sk-your-anthropic-api-key
+  - key: DB_URL
+    value: postgresql://user:password@host:5432/job_tracker
+  - key: QUEUE_TYPE
+    value: cron
+  - key: ALI_EMAIL
+    value: you@example.com
+  - key: ALI_WEBHOOK_URL
+    value: https://your-webhook-url.com/webhook
+  - key: LOG_LEVEL
+    value: INFO
+  - key: CLIENT_NAME
+    value: Default Client
+  - key: CRM_PROVIDER
+    value: sqlite
