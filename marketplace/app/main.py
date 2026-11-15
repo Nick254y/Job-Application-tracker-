@@ -2,13 +2,14 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 import os
-
+from pathlib import Path
 from app.api.routes import router as api_router
 from app.api.auth import router as auth_router
 from app.utils.logger import setup_logger
 from app.models import init_db
 from app.config import settings
 
+BASE_DIR = Path(__file__).resolve().parent
 logger = setup_logger(__name__)
 
 # Initialize database at module import time (startup event may not fire in all contexts)
