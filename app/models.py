@@ -1,17 +1,26 @@
-from sqlalchemy import create_engine
-from sqlalchemy import create_engine, Column, Integer, String, DateTime
-from sqlalchemy.orm import sessionmaker, declarative_base
-from sqlalchemy import Column, String, Text, Integer, DateTime, ForeignKey
-from sqlalchemy.orm import declarative_base, sessionmaker
 from datetime import datetime
+
+from sqlalchemy import (
+    Column,
+    DateTime,
+    ForeignKey,
+    Integer,
+    String,
+    Text,
+    create_engine,
+)
+from sqlalchemy.orm import declarative_base, sessionmaker
+
 from app.config import settings
 
+# Database setup
 engine = create_engine(settings.db_url)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 
 
 class Job(Base):
+    """Job posting model."""
     __tablename__ = "jobs"
 
     id = Column(Integer, primary_key=True, index=True)
@@ -28,6 +37,7 @@ class Job(Base):
 
 
 class Application(Base):
+    """Application submission model."""
     __tablename__ = "applications"
 
     id = Column(Integer, primary_key=True, index=True)
